@@ -1,7 +1,7 @@
 package com.example.tetris3d
 
 //хранит различные фигуры
-class FiguresBank() {
+class FiguresBank {
     private var list = mutableListOf<Figure>()
     init {
         fillBank()
@@ -11,7 +11,7 @@ class FiguresBank() {
         return list[(0 until list.size).random()]
     }
 
-    fun fillBank(){
+    private fun fillBank(){
         list.clear()
         //очень тупое добавление фигур)
         val figure = Figure()

@@ -7,6 +7,6 @@ class Color(
 ){
     //показывает не пустая ли точка
     fun filled () : Boolean{
-        return r == -1
+        return r != -1
     }
 }
