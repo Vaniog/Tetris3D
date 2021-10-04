@@ -60,7 +60,7 @@ class Figure{
             }
             else
                 for (i in (0..2))
-                    rotate('x', 1)
+                    rotate('y', 1)
         }
 
         if (axis == 'y'){
@@ -80,7 +80,7 @@ class Figure{
             }
             else
                 for (i in (0..2))
-                    rotate('x', 1)
+                    rotate('z', 1)
         }
 
         if (axis == 'z'){
