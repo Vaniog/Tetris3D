@@ -75,5 +75,26 @@ class Field(
         return true
     }
 
+    //поворачивает главную фигуру на оси, направление 1 или -1,
+    //1 - туда же куда линии эми направлены если ток течет по данной оси, короче вроде это правило буравчика
+    fun rotateFigure(axis : Char, direction : Int){
+        curFigure.rotate(axis, direction)
+        if (isCollide(curFigure))
+            curFigure.rotate(axis, (direction + 1) % 2)
+    }
+
+    //ось понятно, направление 1 - по оси -1 - против
+    fun moveFigure(axis : Char, direction : Int){
+        if (axis == 'x'){
+            curFigure.coordinates.x += direction
+            if (isCollide(curFigure))
+                curFigure.coordinates.x -= direction
+        }
+        if (axis == 'z'){
+            curFigure.coordinates.z += direction
+            if (isCollide(curFigure))
+                curFigure.coordinates.z -= direction
+        }
+    }
 }
 
