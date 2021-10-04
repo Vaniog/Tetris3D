@@ -58,6 +58,9 @@ class Figure{
                 correctSizes()
                 return
             }
+            else
+                for (i in (0..2))
+                    rotate('x', 1)
         }
 
         if (axis == 'y'){
@@ -75,8 +78,31 @@ class Figure{
                 correctSizes()
                 return
             }
+            else
+                for (i in (0..2))
+                    rotate('x', 1)
         }
-    }
+
+        if (axis == 'z'){
+            if (direction == 1){
+                val newShape = Array(size.y) { Array(size.x) { Array(size.z) { Color(-1, -1, -1) } } }
+                for (x in (0 until size.x))
+                    for (y in (0 until  size.y))
+                        for (z in (0 until size.z)) {
+                            newShape[size.y - 1 - y][x][z] = shape[x][y][z]
+                        }
+                val newCenter = Point(size.y * 2 - center.y, center.x, center.z)
+                correctCoordinates(newCenter)
+                center = newCenter
+                shape = newShape
+                correctSizes()
+                return
+            }
+            else
+                for (i in (0..2))
+                    rotate('x', 1)
+        }
+}
 
     //когда фигура повернулась ее центр остался на месте, а вот координаты точки 0 0 0 изменились, надо корректировать
     private fun correctCoordinates(newCenter : Point)
