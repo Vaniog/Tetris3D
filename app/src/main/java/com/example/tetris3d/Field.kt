@@ -29,15 +29,18 @@ class Field(
         return true
     }
 
-    //проверяет не касается ли фигура клеток, и не вылезает ли за границы (но границы пока не проверяет)
+    //проверяет не касается ли фигура клеток, и не вылезает ли за границы
     private fun isCollide(figure : Figure) : Boolean
     {
         for (x in (0 until figure.size.x))
             for (y in (0 until  figure.size.y))
                 for (z in (0 until figure.size.z)) {
-                    if (figure.shape[x][y][z].filled() &&
-                        field[x + figure.coordinates.x][y + figure.coordinates.y][z + figure.coordinates.z].filled())
+                    if (figure.shape[x][y][z].filled()) {
+                        if (!isPointOnField(Point(x + figure.coordinates.x, y + figure.coordinates.y, z + figure.coordinates.z)))
                             return true
+                        if (field[x + figure.coordinates.x][y + figure.coordinates.y][z + figure.coordinates.z].filled())
+                            return true
+                    }
                 }
         return false
     }
@@ -60,6 +63,16 @@ class Field(
 
     fun clearField() {
         field = Array(width) {Array(height) {Array(width){Color(-1, -1, -1)}}}
+    }
+
+    private fun isPointOnField(point : Point) : Boolean{
+        if (point.x < 0 || point.x >= width)
+            return false
+        if (point.z < 0 || point.z >= width)
+            return false
+        if (point.y < 0 || point.y >= height)
+            return false
+        return true
     }
 
 }
