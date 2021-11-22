@@ -1,11 +1,13 @@
 package com.example.tetris3d
 
+import android.graphics.Color
+
 //фигура - хранит трехмерный массив с цветами ее точек
 //также способна проводить с собой преобразования
 //координаты центра и фигуры увеличены вдвое для удобного счета
 class Figure{
     // трехмерный массив с цветами ее точек
-    var shape = Array(1){Array(1){ Array(1){Color(-1, -1, -1)} }}
+    var shape = Array(1){Array(1){ Array(1){ Color.TRANSPARENT} }}
 
     // координаты центра вращения
     private var center: Point = Point(0, 0, 0)
@@ -13,10 +15,11 @@ class Figure{
     var coordinates = Point (0, 0, 0)
     //размеры точки по осям
     var size = Point(0, 0, 0)
+    var color = Color.BLUE
 
     //создает пустую фигуру с заданными размерами
     fun emptyFill (width : Int, height : Int){
-        shape = Array(width){Array(height){ Array(1){Color(-1, -1, -1)} }}
+        shape = Array(width){Array(height){ Array(1){Color.TRANSPARENT} }}
         size.x = width
         size.y = height
         size.z = 1
@@ -27,11 +30,11 @@ class Figure{
         center.x = centerX
         center.y = centerY
         center.z = (centerX) % 2
-        val figureArray = Array(converted.size) { Array(converted[0].size) { Array(1) { Color(-1, -1, -1) } } }
+        val figureArray = Array(converted.size) { Array(converted[0].size) { Array(1) { Color.TRANSPARENT } } }
         for (x in (converted.indices))
             for (y in (converted[0].indices)) {
                 if (converted[x][y] == 1)
-                    figureArray[x][y][0] = Color(0, 0, 0)
+                    figureArray[x][y][0] = Color.BLUE
             }
         size.x = converted.size
         size.y = converted[0].size
@@ -44,14 +47,34 @@ class Figure{
     fun rotate(axis : Char, direction : Int) {
         if (axis == 'x') {
             if (direction == 1) {
-                val newShape = Array(size.x) { Array(size.z) { Array(size.y) { Color(-1, -1, -1) } } }
+                val newShape = Array(size.x) { Array(size.z) { Array(size.y) { Color.TRANSPARENT} } }
 
                 for (x in (0 until size.x))
                     for (y in (0 until  size.y))
                         for (z in (0 until size.z)) {
-                            newShape[x][z][size.y - 1 - y] = shape[x][y][z]
+                                newShape[x][z][size.y - 1 - y] = shape[x][y][z]
                         }
                 val newCenter = Point(center.x, center.z, size.y * 2 - center.y)
+                correctCoordinates(newCenter)
+                center = newCenter
+                shape = newShape
+                correctSizes()
+                return
+            }
+            else
+                for (i in (0..2))
+                    rotate('x', 1)
+        }
+
+        if (axis == 'y'){
+            if (direction == 1){
+                val newShape = Array(size.z) { Array(size.y) { Array(size.x) { Color.TRANSPARENT } } }
+                for (x in (0 until size.x))
+                    for (y in (0 until  size.y))
+                        for (z in (0 until size.z)) {
+                            newShape[size.z - 1 - z][y][x] = shape[x][y][z]
+                        }
+                val newCenter = Point(size.z * 2 - center.z, center.y, center.x)
                 correctCoordinates(newCenter)
                 center = newCenter
                 shape = newShape
@@ -63,29 +86,9 @@ class Figure{
                     rotate('y', 1)
         }
 
-        if (axis == 'y'){
-            if (direction == 1){
-                val newShape = Array(size.z) { Array(size.y) { Array(size.x) { Color(-1, -1, -1) } } }
-                for (x in (0 until size.x))
-                    for (y in (0 until  size.y))
-                        for (z in (0 until size.z)) {
-                            newShape[size.z -1 - z][y][x] = shape[x][y][z]
-                        }
-                val newCenter = Point(size.z * 2 - center.z, center.y, center.x)
-                correctCoordinates(newCenter)
-                center = newCenter
-                shape = newShape
-                correctSizes()
-                return
-            }
-            else
-                for (i in (0..2))
-                    rotate('z', 1)
-        }
-
         if (axis == 'z'){
             if (direction == 1){
-                val newShape = Array(size.y) { Array(size.x) { Array(size.z) { Color(-1, -1, -1) } } }
+                val newShape = Array(size.y) { Array(size.x) { Array(size.z) { Color.TRANSPARENT } } }
                 for (x in (0 until size.x))
                     for (y in (0 until  size.y))
                         for (z in (0 until size.z)) {
@@ -100,9 +103,19 @@ class Figure{
             }
             else
                 for (i in (0..2))
-                    rotate('x', 1)
+                    rotate('z', 1)
         }
 }
+
+    fun changeColor(color: Int){
+        this.color = color
+        for (x in (0 until size.x))
+            for (y in (0 until  size.y))
+                for (z in (0 until size.z)) {
+                    if (shape[x][y][z] != Color.TRANSPARENT)
+                        shape[x][y][z] = color
+                }
+    }
 
     //когда фигура повернулась ее центр остался на месте, а вот координаты точки 0 0 0 изменились, надо корректировать
     private fun correctCoordinates(newCenter : Point)
@@ -119,4 +132,7 @@ class Figure{
         size.y = shape[0].size
         size.z = shape[0][0].size
     }
+
+
+
 }
