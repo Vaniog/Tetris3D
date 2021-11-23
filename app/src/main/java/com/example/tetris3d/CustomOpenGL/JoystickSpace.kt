@@ -31,7 +31,7 @@ class JoystickSpace(private val fieldSpace: FieldSpace) : Space() {
         cx = canvas.width / 2f
         cy = canvas.height * 35f / 40f
         w = canvas.width * 4f / 5f / 2f
-        h = canvas.height / 6f / 3f * (cos (fieldSpace.fieldRotationX + PI/4.0) + 1f).toFloat()
+        h = canvas.height / 6f / 4.5f * (cos (fieldSpace.fieldRotationX + PI/4.0) + 2f).toFloat()
 
         k1 = tan(fieldSpace.fieldRotationY - PI /4.0).toFloat() * h / w
         x1 = sqrt(h * h / (k1 * k1 + h * h / w / w))
@@ -54,43 +54,48 @@ class JoystickSpace(private val fieldSpace: FieldSpace) : Space() {
         paint.strokeWidth = 3f
         canvas.drawLine(cx - x1, cy - y1, cx + x1, cy + y1, paint)
         canvas.drawLine(cx - x2, cy - y2, cx + x2, cy + y2, paint)
+        paint.strokeWidth = 1f
+        paint.textSize = 25f
+        val str = "${"%.2f".format(fieldSpace.fieldRotationY)},\n  ${"%.2f".format(cos(fieldSpace.fieldRotationY))}, \n ${"%.2f".format(sin(fieldSpace.fieldRotationY))}"
+        canvas.drawText(str, 0, str.length - 1, 50f, 50f, paint)
     }
 
     override fun onTouchEvent(event: MotionEvent?, width: Int, height: Int): Boolean {
         if (event != null) {
             if (event.action == MotionEvent.ACTION_UP) {
-                val x = event.x - cx;
+                val x = event.x - cx
                 val y = event.y - cy
                 if (x * x / w / w + y * y / h / h > 1)
                     return true
+                fieldSpace.joystickTouched = true
 
-                var up1 = y > k1 * x
-                var up2 = y > k2 * x
+                val up1 = y > k1 * x
+                val up2 = y > k2 * x
                 if (tan(fieldSpace.fieldRotationY - PI / 4.0) >= 0){
                     val s = sign(cos(fieldSpace.fieldRotationY - PI / 4.0)).toInt()
                     if (up1)
                         if (up2)
-                            fieldSpace.field.moveFigure('x', 1 * s)
+                            fieldSpace.field.moveFigure('x', 1 * s, 1)
                         else
-                            fieldSpace.field.moveFigure('z', 1 * s)
+                            fieldSpace.field.moveFigure('z', 1 * s, 1)
                     else
                         if (up2)
-                            fieldSpace.field.moveFigure('z', -1 * s)
+                            fieldSpace.field.moveFigure('z', -1 * s, 1)
                         else
-                            fieldSpace.field.moveFigure('x', -1 * s)
+                            fieldSpace.field.moveFigure('x', -1 * s, 1)
                 }
                 else{
                     val s = sign(cos(fieldSpace.fieldRotationY - PI / 4.0)).toInt()
                     if (up1)
                         if (up2)
-                            fieldSpace.field.moveFigure('z', 1 * s)
+                            fieldSpace.field.moveFigure('z', 1 * s, 1)
                         else
-                            fieldSpace.field.moveFigure('x', 1 * s)
+                            fieldSpace.field.moveFigure('x', 1 * s, 1)
                     else
                         if (up2)
-                            fieldSpace.field.moveFigure('x', -1 * s)
+                            fieldSpace.field.moveFigure('x', -1 * s, 1)
                         else
-                            fieldSpace.field.moveFigure('z', -1 * s)
+                            fieldSpace.field.moveFigure('z', -1 * s, 1)
                 }
             }
         }

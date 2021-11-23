@@ -1,6 +1,9 @@
 package com.example.tetris3d
 
 import android.graphics.Color
+import com.example.customopengl.Vector
+import kotlin.math.PI
+import kotlin.math.sign
 
 //фигура - хранит трехмерный массив с цветами ее точек
 //также способна проводить с собой преобразования
@@ -10,7 +13,7 @@ class Figure{
     var shape = Array(1){Array(1){ Array(1){ Color.TRANSPARENT} }}
 
     // координаты центра вращения
-    private var center: Point = Point(0, 0, 0)
+    var center: Point = Point(0, 0, 0)
     //координаты точки 0 0 0 фигуры на поле
     var coordinates = Point (0, 0, 0)
     //размеры точки по осям
@@ -134,5 +137,66 @@ class Figure{
     }
 
 
+    val rotations = Vector(0.0, 0.0, 0.0)
+    private val rotationSpeed = PI * 5
+    val translations = Vector(0.0, 0.0, 0.0)
+    private val translationSpeed = 10
 
+    fun launchRotation(axis : Char, direction: Int){
+        if (axis == 'x'){
+            rotations.x += direction * PI / 2.0
+        }
+        if (axis == 'y'){
+            rotations.y += direction * PI / 2.0
+        }
+        if (axis == 'z'){
+            rotations.z += direction * PI / 2.0
+        }
+    }
+
+    fun launchTranslation(axis : Char, direction: Int){
+        if (axis == 'x'){
+            translations.x += direction
+        }
+        if (axis == 'y'){
+            translations.y += direction
+        }
+        if (axis == 'z'){
+            translations.z += direction
+        }
+    }
+
+    fun updateTime(deltaTime : Double){
+        var lastSign : Int
+        lastSign = rotations.x.sign.toInt()
+        rotations.x += -lastSign * rotationSpeed * deltaTime
+        if (rotations.x.sign.toInt() != lastSign)
+            rotations.x = 0.0
+
+        lastSign = rotations.y.sign.toInt()
+        rotations.y += -lastSign * rotationSpeed * deltaTime
+        if (rotations.y.sign.toInt() != lastSign)
+            rotations.y = 0.0
+
+        lastSign = rotations.z.sign.toInt()
+        rotations.z += -lastSign * rotationSpeed * deltaTime
+        if (rotations.z.sign.toInt() != lastSign)
+            rotations.z = 0.0
+
+
+        lastSign = translations.x.sign.toInt()
+        translations.x += -lastSign * translationSpeed * deltaTime
+        if (translations.x.sign.toInt() != lastSign)
+            translations.x = 0.0
+
+        lastSign = translations.y.sign.toInt()
+        translations.y += -lastSign * translationSpeed * deltaTime
+        if (translations.y.sign.toInt() != lastSign)
+            translations.y = 0.0
+
+        lastSign = translations.z.sign.toInt()
+        translations.z += -lastSign * translationSpeed * deltaTime
+        if (translations.z.sign.toInt() != lastSign)
+            translations.z = 0.0
+    }
 }

@@ -1,11 +1,17 @@
 package com.example.tetris3d
 
 import android.graphics.Color
+import java.util.*
 
 //хранит различные фигуры
 class FiguresBank {
     private var list = mutableListOf<Figure>()
-    private var colorList = mutableListOf<Int>(Color.BLUE, Color.YELLOW, Color.RED, Color.GREEN, Color.MAGENTA)
+    private var colorList = mutableListOf<Int>(
+        Color.BLUE,
+        Color.YELLOW,
+        Color.RED,
+        Color.GREEN,
+        Color.MAGENTA)
     init {
         fillBank()
     }

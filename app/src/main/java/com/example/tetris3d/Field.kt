@@ -18,10 +18,7 @@ class Field(
 
     //обновляет состояние поля
     fun doStep() : Boolean{
-        curFigure.coordinates.y++
-
-        if (isCollide(curFigure)) {
-            curFigure.coordinates.y--
+        if (!moveFigure('y', 1, -1)) {
             addToField(curFigure)
             curFigure = nextFigure
             nextFigure = figuresBank.getFigure()
@@ -80,24 +77,42 @@ class Field(
 
     //поворачивает главную фигуру на оси, направление 1 или -1,
     //1 - туда же куда линии эми направлены если ток течет по данной оси, короче вроде это правило буравчика
-    fun rotateFigure(axis : Char, direction : Int){
+    fun rotateFigure(axis : Char, direction : Int, sign : Int) : Boolean{
         curFigure.rotate(axis, direction)
-        if (isCollide(curFigure))
+        if (isCollide(curFigure)) {
             curFigure.rotate(axis, -direction)
+            return false
+        }
+        curFigure.launchRotation(axis, direction * sign)
+        return true
     }
 
     //ось понятно, направление 1 - по оси -1 - против
-    fun moveFigure(axis : Char, direction : Int){
+    fun moveFigure(axis : Char, direction : Int, sign : Int) : Boolean{
+        if (axis == 'y'){
+            curFigure.coordinates.y += direction
+            if (isCollide(curFigure)){
+                curFigure.coordinates.y -= direction
+                return false
+            }
+        }
         if (axis == 'x'){
             curFigure.coordinates.x += direction
-            if (isCollide(curFigure))
+            if (isCollide(curFigure)){
                 curFigure.coordinates.x -= direction
+                return false
+            }
         }
         if (axis == 'z'){
             curFigure.coordinates.z += direction
-            if (isCollide(curFigure))
+            if (isCollide(curFigure)){
                 curFigure.coordinates.z -= direction
+                return false
+            }
         }
+
+        curFigure.launchTranslation(axis, direction * sign)
+        return true
     }
 }
 

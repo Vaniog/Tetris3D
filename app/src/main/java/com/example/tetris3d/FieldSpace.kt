@@ -24,7 +24,7 @@ class FieldSpace(val field: Field, context: Context) : Space() {
     }
 
 
-    var fieldRotationY = PI / 4.0
+    var fieldRotationY = PI / 4.0 + 0.001
     var fieldRotationX = 0.02
     private var lastUpdateTime = time
 
@@ -72,6 +72,20 @@ class FieldSpace(val field: Field, context: Context) : Space() {
 
         val shape1 = field.curFigure.shape
         val coords1 = field.curFigure.coordinates
+        val center = field.curFigure.center
+        field.curFigure.updateTime(deltaTime)
+
+        translate(-field.curFigure.translations.x * 2.0, -field.curFigure.translations.y * 2.0, -field.curFigure.translations.z * 2.0)
+        translate(center.x.toDouble() + coords1.x * 2.0 - 1,
+            -center.y.toDouble() - coords1.y * 2.0 + 1,
+            center.z.toDouble() + coords1.z * 2.0 - 1)
+        rotateX(-field.curFigure.rotations.x)
+        rotateY(-field.curFigure.rotations.y)
+        rotateZ(-field.curFigure.rotations.z)
+        translate(-center.x.toDouble() - coords1.x * 2.0 + 1,
+            center.y.toDouble() + coords1.y * 2.0 - 1,
+            -center.z.toDouble() - coords1.z * 2.0 + 1)
+
         for (x in shape1.indices)
             for (y in shape1[0].indices)
                 for (z in shape1[0][0].indices)
@@ -80,13 +94,14 @@ class FieldSpace(val field: Field, context: Context) : Space() {
                     if (color1 == Color.TRANSPARENT)
                         continue
                     pushMatrix()
-                    translate(x.toDouble() * 2 + coords1.x * 2, -y.toDouble() * 2 - coords1.y * 2, z.toDouble() * 2 + coords1.z * 2)
+                    translate(x.toDouble() * 2.0 + coords1.x * 2.0, -y.toDouble() * 2.0 - coords1.y * 2.0, z.toDouble() * 2.0 + coords1.z * 2.0)
                     color3d(color1)
                     cube()
                     popMatrix()
                 }
     }
 
+    var joystickTouched = false
     private var mouseStartX = 0.0f
     private var mouseStartY = 0.0f
     private var lastMouseX = 0.0f
@@ -121,7 +136,7 @@ class FieldSpace(val field: Field, context: Context) : Space() {
         }
 
         if (event.action == MotionEvent.ACTION_DOWN){
-            if (time - lastTouchTime <= 0.2 && mouseStartY >= height / 2f && (abs(mouseStartX - event.x) < height / 30.0) && abs(mouseStartY - event.y) < height / 30.0) {
+            if (time - lastTouchTime <= 0.2 && mouseStartY >= height / 2f && !joystickTouched && (abs(mouseStartX - event.x) < height / 30.0) && abs(mouseStartY - event.y) < height / 30.0) {
                 touchMode = LOOK_MODE
                 vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
             }
@@ -142,33 +157,33 @@ class FieldSpace(val field: Field, context: Context) : Space() {
                     val s = sign(cos(fieldRotationY)).toInt()
                     if (tan(fieldRotationY) >= 0) {
                         if (event.y - mouseStartY > 0)
-                            field.rotateFigure('z', 1 * s)
+                            field.rotateFigure('z', 1 * s, 1)
                         else if (event.y - mouseStartY < 0)
-                            field.rotateFigure('z', -1 * s)
+                            field.rotateFigure('z', -1 * s, 1)
                     } else {
                         if (event.y - mouseStartY > 0)
-                            field.rotateFigure('x', 1 * s)
+                            field.rotateFigure('x', 1 * s, -1)
                         else if (event.y - mouseStartY < 0)
-                            field.rotateFigure('x', -1 * s)
+                            field.rotateFigure('x', -1 * s, -1)
                     }
                 } else {
                     val s = sign(cos(fieldRotationY)).toInt()
                     if (tan(fieldRotationY) >= 0) {
                         if (event.y - mouseStartY > 0)
-                            field.rotateFigure('x', 1 * s)
+                            field.rotateFigure('x', 1 * s, -1)
                         else if (event.y - mouseStartY < 0)
-                            field.rotateFigure('x', -1 * s)
+                            field.rotateFigure('x', -1 * s, -1)
                     } else {
                         if (event.y - mouseStartY > 0)
-                            field.rotateFigure('z', -1 * s)
+                            field.rotateFigure('z', -1 * s, 1)
                         else if (event.y - mouseStartY < 0)
-                            field.rotateFigure('z', 1 * s)
+                            field.rotateFigure('z', 1 * s,  1)
                     }
                 }
             }
             else if (touchMode == ROTATING_MODE && abs(event.x - mouseStartX) > height / 10.0){
                 val  s = sign(event.x - mouseStartX).toInt()
-                field.rotateFigure('y', -1 * s)
+                field.rotateFigure('y', -1 * s, 1)
             }
             stopped = false
         }
@@ -178,6 +193,7 @@ class FieldSpace(val field: Field, context: Context) : Space() {
         else
             lastTouchTime = 0.0
         touchMode = ROTATING_MODE
+        joystickTouched = false
         return true
     }
 }
