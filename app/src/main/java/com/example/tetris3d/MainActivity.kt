@@ -3,6 +3,7 @@ package com.example.tetris3d
 import android.os.Bundle
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customopengl.GLSurfaceView
 import com.example.customopengl.Space
@@ -34,6 +35,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Yo().Play(this)
+
         var field = Field(4, 15)
         field.stupidFill()
 
@@ -44,6 +48,11 @@ class MainActivity : AppCompatActivity() {
         doStep.setOnClickListener{
             if(!field.doStep())
                 field.clearField()
+        }
+
+        findViewById<Button>(R.id.soundcheck).setOnClickListener{
+            //Yo().Play(this)
+            Toast.makeText(this, "btn ok", Toast.LENGTH_SHORT).show()
         }
 
         val fieldSpace = FieldSpace(field, this)
