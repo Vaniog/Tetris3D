@@ -20,6 +20,34 @@ class Figure{
     var size = Point(0, 0, 0)
     var color = Color.BLUE
 
+    fun clone() : Figure{
+        val figure = Figure()
+        figure.coordinates = Point(coordinates.x, coordinates.y, coordinates.z)
+        figure.shape = shape.clone()
+        figure.color = color
+        figure.center = Point(center.x, center.y, center.z)
+        figure.size = Point(size.x, size.y, size.z)
+        return figure
+    }
+
+
+    fun equals(figure: Figure): Boolean {
+        if (figure.size.x != size.x)
+            return false
+        if (figure.size.y != size.y)
+            return false
+        if (figure.size.z != size.z)
+            return false
+        for (x in (0 until size.x))
+            for (y in (0 until size.y))
+                for (z in (0 until size.z)){
+                    if (figure.shape[x][y][z] != shape[x][y][z])
+                        return false
+                }
+        return true
+    }
+
+
     //создает пустую фигуру с заданными размерами
     fun emptyFill (width : Int, height : Int){
         shape = Array(width){Array(height){ Array(1){Color.TRANSPARENT} }}
@@ -110,6 +138,11 @@ class Figure{
         }
 }
 
+    fun scramble(){
+        for (i in (0..100))
+            rotate('x' + (0..2).random(), -1 + 2 *(0..1).random())
+    }
+
     fun changeColor(color: Int){
         this.color = color
         for (x in (0 until size.x))
@@ -118,6 +151,25 @@ class Figure{
                     if (shape[x][y][z] != Color.TRANSPARENT)
                         shape[x][y][z] = color
                 }
+    }
+
+    fun move(axis : Int, dist : Int){
+        if (axis == 0) {
+            coordinates.z -= dist
+            return
+        }
+        if (axis == 1) {
+            coordinates.x -= dist
+            return
+        }
+        if (axis == 2) {
+            coordinates.z += dist
+            return
+        }
+        if (axis == 3) {
+            coordinates.x += dist
+            return
+        }
     }
 
     //когда фигура повернулась ее центр остался на месте, а вот координаты точки 0 0 0 изменились, надо корректировать
@@ -163,6 +215,20 @@ class Figure{
         }
         if (axis == 'z'){
             translations.z += direction
+        }
+    }
+    fun launchTranslation(axis : Int){
+        var axisC = 'x'
+        if (axis % 2 == 0)
+            axisC = 'z'
+        var dir = 1
+        if (axis <= 1)
+            dir = -1
+        if (axisC == 'x'){
+            translations.x += dir
+        }
+        if (axisC == 'y'){
+            translations.y += dir
         }
     }
 

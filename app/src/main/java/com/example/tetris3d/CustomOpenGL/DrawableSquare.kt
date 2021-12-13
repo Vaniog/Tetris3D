@@ -11,7 +11,7 @@ import kotlin.math.*
 
 class DrawableSquare(
     private var point1 : Point, private var point2: Point, private var point3: Point, private var point4 : Point,
-    private var color : Int) : DrawableObject(){
+    private var color : Int, private var lineColor : Int) : DrawableObject(){
     var normal = Vector(0.0, 0.0, 1.0)
 
 
@@ -66,6 +66,7 @@ class DrawableSquare(
         var k = normal.z
         k = sqrt(k)
         //k = sin(k * PI / 2)
+
         paint.color = Color.rgb((color.red * k.toFloat()).toInt(), (color.green * k.toFloat()).toInt(), (color.blue * k.toFloat()).toInt())
         canvas.apply {
             val path = Path()
@@ -85,12 +86,14 @@ class DrawableSquare(
             path.lineTo(
                 cx + (width * point1.x).toFloat(),
                 cy - (width * point1.y).toFloat())
-            drawPath(path, paint)
-            paint.color = Color.rgb(190, 190, 190)
+            if (color != Color.TRANSPARENT) {
+                drawPath(path, paint)
+            }
+            paint.color = lineColor
             paint.style = Paint.Style.STROKE
             paint.strokeWidth = 2f
-
-            drawPath(path, paint)
+            if (lineColor != Color.TRANSPARENT)
+                drawPath(path, paint)
         }
     }
 

@@ -18,14 +18,14 @@ class JoystickSpace(private val fieldSpace: FieldSpace) : Space() {
     }
     private var cx = 1f
     private var cy = 1f
-    private  var w = 1f
-    private   var h = 1f
-    private   var k1 = 1f
-    private   var x1 = 1f
-    private   var y1 = 1f
-    private   var k2 = 1f
-    private   var x2 = 1f
-    private   var y2 = 1f
+    private var w = 1f
+    private var h = 1f
+    private var k1 = 1f
+    private var x1 = 1f
+    private var y1 = 1f
+    private var k2 = 1f
+    private var x2 = 1f
+    private var y2 = 1f
 
     private fun countVars(canvas: Canvas){
         cx = canvas.width / 2f
@@ -57,12 +57,22 @@ class JoystickSpace(private val fieldSpace: FieldSpace) : Space() {
         paint.strokeWidth = 1f
         paint.textSize = 25f
         val str = "${"%.2f".format(fieldSpace.fieldRotationY)},\n  ${"%.2f".format(cos(fieldSpace.fieldRotationY))}, \n ${"%.2f".format(sin(fieldSpace.fieldRotationY))}"
-        canvas.drawText(str, 0, str.length - 1, 50f, 50f, paint)
+        //canvas.drawText(str, 0, str.length - 1, 50f, 50f, paint)
     }
 
+    var onJoystick = false
     override fun onTouchEvent(event: MotionEvent?, width: Int, height: Int): Boolean {
         if (event != null) {
-            if (event.action == MotionEvent.ACTION_UP) {
+            if (event.action == MotionEvent.ACTION_DOWN)
+            {
+                val x = event.x - cx
+                val y = event.y - cy
+                if (x * x / w / w + y * y / h / h > 1)
+                    return true
+                onJoystick = true;
+            }
+            if (event.action == MotionEvent.ACTION_UP && onJoystick) {
+                onJoystick = false;
                 val x = event.x - cx
                 val y = event.y - cy
                 if (x * x / w / w + y * y / h / h > 1)

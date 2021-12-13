@@ -4,8 +4,9 @@ import android.graphics.Color
 
 //вроде как главный обрабатывающий класс
 class Field(
-    val width : Int,
-    val height : Int
+        val width : Int,
+    val height : Int,
+    val playHeight : Int,
 ) {
     //figuresBank чтобы брать из него случайные фигуры
     private var figuresBank = FiguresBank()
@@ -15,18 +16,41 @@ class Field(
 
     //главное поле - хранит координаты точек и их цвета
     var field = Array(width) {Array(height) {Array(width){Color.TRANSPARENT}}}
-
+    var gameEnded = false;
+    private val endTickTime = 0.2;
+    private var gameEndTimePassed = 0.0;
+    private var ticks = 0;
+    private val maxTick = 30;
+    private var tickColor = Color.BLACK;
     //обновляет состояние поля
-    fun doStep() : Boolean{
-        if (!moveFigure('y', 1, -1)) {
-            addToField(curFigure)
-            curFigure = nextFigure
-            nextFigure = figuresBank.getFigure()
-            nextFigure.coordinates = Point(0, 0, 0)
-            if (isCollide(nextFigure))
-                return false
+    fun doStep(deltaTime : Double) : Int{
+        if (!gameEnded){
+            if (!moveFigure('y', 1, -1)) {
+                addToField(curFigure)
+                if (curFigure.coordinates.y < height - playHeight - 1)
+                {
+                    gameEnded = true;
+                    return 1;
+                }
+                curFigure = nextFigure
+                nextFigure = figuresBank.getFigure()
+                nextFigure.coordinates = Point(0, 0, 0)
+                if (isCollide(nextFigure))
+                    return 0
+            }
         }
-        return true
+        else{
+            ticks++
+            var buf = curFigure.color
+            curFigure.color = tickColor
+            tickColor = buf
+            gameEndTimePassed = 0.0;
+            if (ticks > maxTick)
+                return 0
+        }
+        if (checkField())
+            return 2
+        return 1
     }
 
     //проверяет не касается ли фигура клеток, и не вылезает ли за границы
@@ -55,14 +79,41 @@ class Field(
                 }
     }
 
-    fun stupidFill() {
+    fun checkField() : Boolean{
+        for (y in (0 until height)){
+            if (field[0][y][0] == Color.WHITE)
+                for(i in y downTo 1)
+                    for (x in 0 until width)
+                        for (z in 0 until width) {
+                            field[x][i][z] = field[x][i - 1][z]
+                        }
+            else {
+                var checker = true
+                for (x in 0 until width)
+                    for (z in 0 until width)
+                        if (field[x][y][z] == Color.TRANSPARENT)
+                            checker = false
+                if (checker) {
+                    for (x in 0 until width)
+                        for (z in 0 until width)
+                            field[x][y][z] = Color.WHITE;
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     fun clearField() {
         field = Array(width) {Array(height) {Array(width){Color.TRANSPARENT}}}
         curFigure = figuresBank.getFigure()
         nextFigure = figuresBank.getFigure()
+        curFigure.coordinates = Point(0, 0, 0)
         nextFigure.coordinates = Point(0, 0, 0)
+        gameEndTimePassed = 0.0;
+        ticks = 0;
+        tickColor = Color.BLACK;
+        gameEnded = false;
     }
 
     private fun isPointOnField(point : Point) : Boolean{
@@ -79,12 +130,25 @@ class Field(
     //1 - туда же куда линии эми направлены если ток течет по данной оси, короче вроде это правило буравчика
     fun rotateFigure(axis : Char, direction : Int, sign : Int) : Boolean{
         curFigure.rotate(axis, direction)
-        if (isCollide(curFigure)) {
-            curFigure.rotate(axis, -direction)
-            return false
+        if (!isCollide(curFigure)) {
+            curFigure.launchRotation(axis, direction * sign)
+            return true
         }
-        curFigure.launchRotation(axis, direction * sign)
-        return true
+        for (tryMoveAxis in (0..3)){
+            for (dist in (1..2)){
+                curFigure.move(tryMoveAxis, dist);
+                if (!isCollide(curFigure)) {
+                    for (i in (1..dist))
+                        curFigure.launchTranslation(tryMoveAxis);
+                    curFigure.launchRotation(axis, direction * sign)
+                    return true
+                }
+                curFigure.move(tryMoveAxis, -dist);
+            }
+        }
+
+        curFigure.rotate(axis, -direction)
+        return false
     }
 
     //ось понятно, направление 1 - по оси -1 - против

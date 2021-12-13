@@ -21,9 +21,14 @@ class Point(var x : Double, var y : Double, var z : Double) {
         val newZ = pointArray[0][2]
         return Point(newX, newY, newZ)
     }
-
+    operator fun times(r : Double) : Point{
+        return Point(x * r, y * r, z * r)
+    }
     operator fun plus(vector: Vector) : Point{
         return Point(x + vector.x, y + vector.y, z + vector.z)
+    }
+    operator fun minus(vector: Vector) : Point{
+        return Point(x - vector.x, y - vector.y, z - vector.z)
     }
     var color = Color.rgb(0, 0, 0)
 }

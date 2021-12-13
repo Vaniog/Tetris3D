@@ -14,9 +14,11 @@ import kotlin.math.sin
 open class Space {
     private var matrixStack = MutableList(0) { MatrixMath(arrayOf(arrayOf())) }
     private var colorStack = MutableList(1){Color.WHITE}
+    private var lineColorStack = MutableList(1){Color.WHITE}
     private var objects = MutableList(0) { DrawableObject() }
     private val camera = Camera()
     var color = Color.WHITE
+    var lineColor = Color.rgb(190, 190, 190)
     var stopped = false
 
     open fun onFrame(){
@@ -35,6 +37,16 @@ open class Space {
     fun color3d(newColor : Int){
         colorStack[colorStack.size - 1] = newColor
         color = colorStack[colorStack.size - 1]
+    }
+
+    fun lineColor3d(r : Int, g : Int, b : Int){
+        lineColorStack[lineColorStack.size - 1] = Color.rgb(r, g, b)
+        lineColor = lineColorStack[lineColorStack.size - 1]
+    }
+
+    fun lineColor3d(newColor : Int){
+        lineColorStack[colorStack.size - 1] = newColor
+        lineColor = lineColorStack[lineColorStack.size - 1]
     }
 
     var oldTime = System.currentTimeMillis().toDouble() / 1000.0
@@ -97,7 +109,7 @@ open class Space {
                  p2x : Double, p2y : Double, p2z : Double,
                  p3x : Double, p3y : Double, p3z : Double,
                  p4x : Double, p4y : Double, p4z : Double){
-        val square = DrawableSquare(Point(p1x, p1y, p1z), Point(p2x, p2y, p2z), Point(p3x, p3y, p3z), Point(p4x, p4y, p4z), color)
+        val square = DrawableSquare(Point(p1x, p1y, p1z), Point(p2x, p2y, p2z), Point(p3x, p3y, p3z), Point(p4x, p4y, p4z), color, lineColor)
         square.transform(matrixStack[matrixStack.lastIndex])
         square.normalize()
         if (square.getZ() >= 1)
@@ -112,7 +124,7 @@ open class Space {
                p2x : Int, p2y : Int, p2z : Int,
                p3x : Int, p3y : Int, p3z : Int,
                p4x : Int, p4y : Int, p4z : Int){
-        val square = DrawableSquare(Point(p1x, p1y, p1z), Point(p2x, p2y, p2z), Point(p3x, p3y, p3z), Point(p4x, p4y, p4z), color)
+        val square = DrawableSquare(Point(p1x, p1y, p1z), Point(p2x, p2y, p2z), Point(p3x, p3y, p3z), Point(p4x, p4y, p4z), color, lineColor)
         square.transform(matrixStack[matrixStack.lastIndex])
         square.normalize()
         if (square.getZ() >= 1)
@@ -166,10 +178,12 @@ open class Space {
     fun pushMatrix(){
         matrixStack.add(matrixStack[matrixStack.lastIndex])
         colorStack.add(colorStack[colorStack.lastIndex])
+        lineColorStack.add(colorStack[colorStack.lastIndex])
     }
     fun popMatrix(){
         matrixStack.removeAt(matrixStack.lastIndex)
         colorStack.removeAt(colorStack.lastIndex)
+        lineColorStack.removeAt(colorStack.lastIndex)
     }
 }
 

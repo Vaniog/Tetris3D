@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.tetris3d">
+
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -11,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Tetris3d">
-        <activity android:name=".GameActivity"></activity>
+        <activity android:name=".CasualActivity"></activity>
+        <activity android:name=".GameActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
