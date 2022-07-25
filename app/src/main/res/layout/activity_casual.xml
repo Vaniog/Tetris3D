@@ -21,6 +21,9 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:rotation="0"
+        android:rotationX="0"
+        android:rotationY="0"
         app:layout_constraintBottom_toBottomOf="parent">
 
     </FrameLayout>

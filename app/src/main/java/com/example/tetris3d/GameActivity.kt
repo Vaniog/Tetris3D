@@ -43,12 +43,14 @@ class GameActivity : AppCompatActivity() {
         }
 
         doStep.setOnClickListener{
-            val action = field.doStep(0.0)
-            if(action == 0) {
-                fieldSpace.onLose()
+            var action = field.doStep(true)
+            while (action == 3) {
+                if (action == 0) {
+                    fieldSpace.onLose()
+                } else if (action == 2)
+                    scoreBoard.scored()
+                action = field.doStep(true)
             }
-            else if (action == 2)
-                scoreBoard.scored()
         }
 
         menuButton.setOnClickListener{

@@ -85,27 +85,27 @@ class JoystickSpace(private val fieldSpace: FieldSpace) : Space() {
                     val s = sign(cos(fieldSpace.fieldRotationY - PI / 4.0)).toInt()
                     if (up1)
                         if (up2)
-                            fieldSpace.field.moveFigure('x', 1 * s, 1)
+                            fieldSpace.field.moveFigure('x', 1 * s, 1, true)
                         else
-                            fieldSpace.field.moveFigure('z', 1 * s, 1)
+                            fieldSpace.field.moveFigure('z', 1 * s, 1, true)
                     else
                         if (up2)
-                            fieldSpace.field.moveFigure('z', -1 * s, 1)
+                            fieldSpace.field.moveFigure('z', -1 * s, 1, true)
                         else
-                            fieldSpace.field.moveFigure('x', -1 * s, 1)
+                            fieldSpace.field.moveFigure('x', -1 * s, 1, true)
                 }
                 else{
                     val s = sign(cos(fieldSpace.fieldRotationY - PI / 4.0)).toInt()
                     if (up1)
                         if (up2)
-                            fieldSpace.field.moveFigure('z', 1 * s, 1)
+                            fieldSpace.field.moveFigure('z', 1 * s, 1, true)
                         else
-                            fieldSpace.field.moveFigure('x', 1 * s, 1)
+                            fieldSpace.field.moveFigure('x', 1 * s, 1, true)
                     else
                         if (up2)
-                            fieldSpace.field.moveFigure('x', -1 * s, 1)
+                            fieldSpace.field.moveFigure('x', -1 * s, 1, true)
                         else
-                            fieldSpace.field.moveFigure('z', -1 * s, 1)
+                            fieldSpace.field.moveFigure('z', -1 * s, 1, true)
                 }
             }
         }

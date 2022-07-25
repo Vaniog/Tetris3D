@@ -35,7 +35,7 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
         stopped = true
         if (!field.gameEnded) {
             if (time - lastUpdateTime > 1.0 / scoreBoard.speed) {
-                val action = field.doStep(deltaTime)
+                val action = field.doStep(false)
                 if (action == 0)
                     field.clearField()
                 if (action == 2)
@@ -45,7 +45,7 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
         }
         else{
             if (time - lastUpdateTime > 0.2) {
-                if (field.doStep(deltaTime) == 0) {
+                if (field.doStep(false) == 0) {
                     onLose()
                 }
                 lastUpdateTime = time

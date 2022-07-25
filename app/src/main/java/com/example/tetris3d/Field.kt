@@ -16,19 +16,18 @@ class Field(
 
     //главное поле - хранит координаты точек и их цвета
     var field = Array(width) {Array(height) {Array(width){Color.TRANSPARENT}}}
-    var gameEnded = false;
-    private val endTickTime = 0.2;
-    private var gameEndTimePassed = 0.0;
-    private var ticks = 0;
-    private val maxTick = 30;
-    private var tickColor = Color.BLACK;
+    var gameEnded = false
+    private val endTickTime = 0.2
+    private var gameEndTimePassed = 0.0
+    private var ticks = 0
+    private val maxTick = 30
+    private var tickColor = Color.BLACK
     //обновляет состояние поля
-    fun doStep(deltaTime : Double) : Int{
+    fun doStep(fast : Boolean) : Int{
         if (!gameEnded){
-            if (!moveFigure('y', 1, -1)) {
+            if (!moveFigure('y', 1, -1, !fast)) {
                 addToField(curFigure)
-                if (curFigure.coordinates.y < height - playHeight - 1)
-                {
+                if (curFigure.coordinates.y < height - playHeight - 1) {
                     gameEnded = true;
                     return 1;
                 }
@@ -37,6 +36,7 @@ class Field(
                 nextFigure.coordinates = Point(0, 0, 0)
                 if (isCollide(nextFigure))
                     return 0
+                return 1
             }
         }
         else{
@@ -50,7 +50,7 @@ class Field(
         }
         if (checkField())
             return 2
-        return 1
+        return 3
     }
 
     //проверяет не касается ли фигура клеток, и не вылезает ли за границы
@@ -152,7 +152,7 @@ class Field(
     }
 
     //ось понятно, направление 1 - по оси -1 - против
-    fun moveFigure(axis : Char, direction : Int, sign : Int) : Boolean{
+    fun moveFigure(axis : Char, direction : Int, sign : Int, withTranslation : Boolean) : Boolean{
         if (axis == 'y'){
             curFigure.coordinates.y += direction
             if (isCollide(curFigure)){
@@ -175,7 +175,8 @@ class Field(
             }
         }
 
-        curFigure.launchTranslation(axis, direction * sign)
+        if (withTranslation)
+            curFigure.launchTranslation(axis, direction * sign)
         return true
     }
 }
