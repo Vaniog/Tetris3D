@@ -7,7 +7,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ProgressSpace(val context: Context) : Space(){
+class ProgressSpace(val context: Context, val need : Int, val activity: CasualActivity) : Space(){
     val startLength = 5.0;
     var length = startLength
     var pass = 0.0
@@ -52,13 +52,23 @@ class ProgressSpace(val context: Context) : Space(){
                 .putInt("HIGH_SCORE_CASUAL", score).apply()
             highestScore = score
         }
-        val str1 = "Combo : $score"
+        var str1 = "Combo : $score"
         val str2 = "Best: $highestScore"
+        var str3 = ""
+        if (need != -1) {
+            str1 += " (You need $need)"
+            activity.updateCampaignTime()
+            val timePassed = activity.currentTime / 1000
+            str3 += "Time: $timePassed"
+        }
         paint.textSize = 35f * textAnim.getScale(deltaTime).toFloat()
         canvas.drawText(str1, 0, str1.length, 20f, 120f, paint)
         if (score != highestScore)
             paint.textSize = 35f
         canvas.drawText(str2, 0, str2.length, 20f, 160f, paint)
+        paint.textSize = 35f
+        if (str3 != "")
+            canvas.drawText(str3, 0, str3.length, 20f, 200f, paint)
     }
 
     override fun onFrame() {
@@ -74,9 +84,13 @@ class ProgressSpace(val context: Context) : Space(){
 
 
     fun scored(){
-        score++;
-        pass = 0.0;
-        length *= 0.97;
-        textAnim.launch();
+        score++
+        if (score == need) {
+            activity.finish()
+            activity.levelPassed()
+        }
+        pass = 0.0
+        length *= 0.97
+        textAnim.launch()
     }
 }

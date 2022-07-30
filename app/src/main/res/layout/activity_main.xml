@@ -8,7 +8,7 @@
 
     <Button
         android:id="@+id/classicButton"
-        android:layout_width="wrap_content"
+        android:layout_width="104dp"
         android:layout_height="wrap_content"
         android:text="CLASSIC"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,10 +28,20 @@
 
     <Button
         android:id="@+id/casualButton"
-        android:layout_width="wrap_content"
+        android:layout_width="104dp"
         android:layout_height="wrap_content"
         android:text="Casual"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/classicButton" />
+
+    <Button
+        android:id="@+id/campaignButton"
+        android:layout_width="104dp"
+        android:layout_height="wrap_content"
+        android:text="Campaign"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/casualButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

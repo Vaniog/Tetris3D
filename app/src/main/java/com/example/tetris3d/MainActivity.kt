@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
         val highScoreText = findViewById<TextView>(R.id.textView2)
         val classicButton = findViewById<Button>(R.id.classicButton)
         val casualButton = findViewById<Button>(R.id.casualButton)
+        val campaignButton = findViewById<Button>(R.id.campaignButton)
 
         val sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
         val highScore = sharedPreferences.getInt("HIGH_SCORE", 0)
@@ -25,14 +26,15 @@ class MainActivity : AppCompatActivity() {
         classicButton.setOnClickListener{
             val i = Intent(this, GameActivity::class.java)
             startActivity(i)
-            finish()
         }
 
         casualButton.setOnClickListener{
-
             val i = Intent(this, CasualActivity::class.java)
             startActivity(i)
-            finish()
+        }
+        campaignButton.setOnClickListener{
+            val i = Intent(this, CampaignActivity::class.java)
+            startActivity(i)
         }
     }
 }
