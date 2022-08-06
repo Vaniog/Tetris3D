@@ -27,11 +27,37 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
 
 
     var fieldRotationY = PI / 4.0 + 0.001
+    var fieldRotationYChangeSpeed = 10.0
+    var fieldRotationYNeedToAdd = 0.0
+    var fieldRotationYChangeLaunch = false
+    var fieldRotationYID = 0
+
+    fun fieldRotationYUpdateLaunch(){
+        fieldRotationYNeedToAdd = PI / 2.0
+        fieldRotationYChangeLaunch = true
+        fieldRotationYID++
+        fieldRotationYID %= 4
+        fieldRotationY = -PI / 4.0 + PI / 2.0 * fieldRotationYID + 0.001
+    }
+    fun fieldRotationYUpdate(){
+        if (fieldRotationYChangeLaunch){
+            var fieldRotationYChange = fieldRotationYChangeSpeed * deltaTime
+            if (fieldRotationYChange > fieldRotationYNeedToAdd){
+                fieldRotationYChange = fieldRotationYNeedToAdd
+                fieldRotationYChangeLaunch = false
+            }
+            fieldRotationYNeedToAdd -= fieldRotationYChange
+            fieldRotationY += fieldRotationYChange
+        }
+        else {
+            fieldRotationY = PI / 4.0 + PI / 2.0 * fieldRotationYID + 0.001
+        }
+    }
+
     var fieldRotationX = 0.02
     private var lastUpdateTime = time
 
-    override fun onFrame() {    
-
+    override fun onFrame() {
         stopped = true
         if (!field.gameEnded) {
             if (time - lastUpdateTime > 1.0 / scoreBoard.speed) {
@@ -57,7 +83,9 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
         rotateZ(PI)
         rotateX(-PI/4.0)
         rotateX(fieldRotationX)
+        fieldRotationYUpdate()
         rotateY(fieldRotationY)
+
         zoom(0.15, 0.15,  0.15)
         translate(-field.width.toDouble() + 1, 17.0, -field.width.toDouble() + 1)
         color3d(29, 51, 74)
@@ -92,9 +120,10 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
             for (y in field.field[0].indices)
                 for (z in field.field[0][0].indices){
                     val color1 = field.field[x][y][z]
-                    if (color1 == Color.TRANSPARENT)
+                    if (color1 == Color.TRANSPARENT || isCubeHidden(x, y, z))
                         continue
                     pushMatrix()
+
                     translate(x.toDouble() * 2, -y.toDouble() * 2, z.toDouble() * 2)
                     color3d(color1)
                     cube()
@@ -167,9 +196,68 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
                     square(1, 1, 0, 1, -1, 0, -1, -1, 0, -1, 1, 0)
                     popMatrix()
                 }
-
-
+        pushMatrix()
+        lineColor3d(Color.TRANSPARENT)
+        color3d(Color.argb(230, 40, 40, 40))
+        translate(field.curFigure.translations.x * 2.0, field.curFigure.translations.y * 2.0, 0.0)
+        for (x in shape1.indices)
+            for (z in shape1[0][0].indices)
+                for (y in shape1[0].indices)
+                {
+                    if (shape1[x][y][z] == Color.TRANSPARENT)
+                        continue
+                    if (x + coords1.x >= field.width || z + coords1.z >= field.width)
+                        continue
+                    pushMatrix()
+                    var y2 = coords1.y + y + 1
+                    while (y2 < field.height && field.field[x + coords1.x][y2][z + coords1.z] == Color.TRANSPARENT)
+                        y2++
+                    translate(x.toDouble() * 2.0 + coords1.x * 2.0, -y2 * 2.0 + 1 + 0.001, z.toDouble() * 2.0 + coords1.z * 2.0)
+                    square(1, 0, 1, 1, 0, -1, -1, 0, -1, -1, 0, 1)
+                    popMatrix()
+                    break
+                }
+        popMatrix()
         stopped = false
+    }
+
+    fun isCubeHidden(x : Int, y : Int, z : Int) : Boolean{
+        if (fieldRotationYChangeLaunch)
+            return false
+
+        if (fieldRotationYID == 0){
+            if (y == 0 || field.field[x][y - 1][z] == Color.TRANSPARENT)
+                return false
+            if (x == field.width - 1 || field.field[x + 1][y][z] == Color.TRANSPARENT)
+                return false
+            if (z == field.width - 1 || field.field[x][y][z + 1] == Color.TRANSPARENT)
+                return false
+        }
+        if (fieldRotationYID == 1){
+            if (y == 0 || field.field[x][y - 1][z] == Color.TRANSPARENT)
+                return false
+            if (x == field.width - 1 || field.field[x + 1][y][z] == Color.TRANSPARENT)
+                return false
+            if (z == 0 || field.field[x][y][z - 1] == Color.TRANSPARENT)
+                return false
+        }
+        if (fieldRotationYID == 2){
+            if (y == 0 || field.field[x][y - 1][z] == Color.TRANSPARENT)
+                return false
+            if (x == 0 || field.field[x - 1][y][z] == Color.TRANSPARENT)
+                return false
+            if (z == 0 || field.field[x][y][z - 1] == Color.TRANSPARENT)
+                return false
+        }
+        if (fieldRotationYID == 3){
+            if (y == 0 || field.field[x][y - 1][z] == Color.TRANSPARENT)
+                return false
+            if (x == 0 || field.field[x - 1][y][z] == Color.TRANSPARENT)
+                return false
+            if (z == field.width - 1 || field.field[x][y][z + 1] == Color.TRANSPARENT)
+                return false
+        }
+        return true
     }
 
     var joystickTouched = false
@@ -205,9 +293,9 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
             mouseY = event.y
             if (touchMode == LOOK_MODE){
                 fieldRotationY += -(mouseX - lastMouseX) / width.toDouble() * PI * 2.0
-                fieldRotationX += -(mouseY - lastMouseY) / height.toDouble() * PI * 1.4
-                fieldRotationX = min(PI / 4.7, fieldRotationX)
-                fieldRotationX = max(-PI / 4, fieldRotationX)
+                //fieldRotationX += -(mouseY - lastMouseY) / height.toDouble() * PI * 1.4
+                //fieldRotationX = min(PI / 4.7, fieldRotationX)
+                //fieldRotationX = max(-PI / 4, fieldRotationX)
             }
 
             lastMouseX = mouseX

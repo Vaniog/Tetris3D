@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import androidx.core.graphics.alpha
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -62,7 +63,7 @@ class DrawableTriangle(
         if (k < 0.5)
             return
         k *= k * k
-        paint.color = Color.rgb((color.red * k.toFloat()).toInt(), (color.green * k.toFloat()).toInt(), (color.blue * k.toFloat()).toInt())
+        paint.color = Color.argb(color.alpha, (color.red * k.toFloat()).toInt(), (color.green * k.toFloat()).toInt(), (color.blue * k.toFloat()).toInt())
         canvas.apply {
             val path = Path()
             path.fillType = Path.FillType.EVEN_ODD

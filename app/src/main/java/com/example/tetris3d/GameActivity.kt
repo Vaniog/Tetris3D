@@ -21,7 +21,7 @@ class GameActivity : AppCompatActivity() {
 
 
         val doStep = findViewById<Button>(R.id.doStep)
-        val switch = findViewById<Switch>(R.id.switch3)
+        val rotateButton = findViewById<Button>(R.id.rotateButton)
         val layout = findViewById<FrameLayout>(R.id.frameLayout)
         val menuButton = findViewById<Button>(R.id.button2)
 
@@ -30,7 +30,7 @@ class GameActivity : AppCompatActivity() {
         if (need == null)
             need = -1;
 
-        val scoreBoard = ScoreBoard(need, this)
+        val scoreBoard = ScoreBoard(this, need, this)
         val fieldSpace = FieldSpace(field, this, scoreBoard)
         //val joystickView = GLSurfaceView(this, JoystickSpace(fieldSpace))
         val view = GLSurfaceView(this)
@@ -39,24 +39,18 @@ class GameActivity : AppCompatActivity() {
         view.addSpace(scoreBoard)
         layout.addView(view)
 
-        switch.setOnClickListener{
-            if (switch.isChecked){
-                fieldSpace.touchMode = fieldSpace.LOOK_MODE
-            }
-            else{
-                fieldSpace.touchMode = fieldSpace.ROTATING_MODE
-            }
-        }
-
         doStep.setOnClickListener{
             var action = field.doStep(true)
             while (action == 3) {
-                if (action == 0) {
-                    fieldSpace.onLose()
-                } else if (action == 2)
-                    scoreBoard.scored()
                 action = field.doStep(true)
             }
+            if (action == 0) {
+                fieldSpace.onLose()
+            } else if (action == 2)
+                scoreBoard.scored()
+        }
+        rotateButton.setOnClickListener{
+            fieldSpace.fieldRotationYUpdateLaunch()
         }
 
 

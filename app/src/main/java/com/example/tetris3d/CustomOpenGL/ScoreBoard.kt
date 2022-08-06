@@ -9,7 +9,7 @@ import com.example.tetris3d.GameActivity
 import kotlin.math.PI
 import kotlin.math.sin
 
-class ScoreBoard(var need : Int = -1, val activity : GameActivity) : Space(){
+class ScoreBoard(val context: Context, var need : Int = -1, val activity : GameActivity) : Space(){
     var speed = 1.0
     var score = 0
 
@@ -26,7 +26,8 @@ class ScoreBoard(var need : Int = -1, val activity : GameActivity) : Space(){
         }
     }
     val textAnim = TextAnim();
-
+    val sharedPreferences = context.getSharedPreferences("data", Context.MODE_PRIVATE)
+    var highScore = sharedPreferences.getInt("HIGH_SCORE", 0)
     override fun fillCanvas(canvas: Canvas) {
         Timer()
         var str = "Score: $score"
@@ -37,13 +38,15 @@ class ScoreBoard(var need : Int = -1, val activity : GameActivity) : Space(){
             val timePassed = activity.currentTime / 1000
             str2 += "Time: $timePassed"
         }
+        var str3 = "Highest: $highScore"
         val paint = Paint()
         paint.color = Color.WHITE
         paint.strokeWidth = 1f
         paint.textSize = 35f * textAnim.getScale(deltaTime).toFloat()
         canvas.drawText(str, 0, str.length, 50f, 50f, paint)
+        canvas.drawText(str3, 0, str3   .length, 50f, 90f, paint)
         if (str2 != "")
-         canvas.drawText(str2, 0, str2.length, 50f, 90f, paint)
+            canvas.drawText(str2, 0, str2.length, 50f, 140f, paint)
     }
 
     fun clear(){
@@ -54,6 +57,10 @@ class ScoreBoard(var need : Int = -1, val activity : GameActivity) : Space(){
         score++
         textAnim.launch();
         speed *= 1.1
+        if (score > highScore) {
+            highScore = score
+            sharedPreferences.edit().putInt("HIGH_SCORE", score).apply()
+        }
         if (score == need){
             activity.finish();
             activity.levelPassed();
