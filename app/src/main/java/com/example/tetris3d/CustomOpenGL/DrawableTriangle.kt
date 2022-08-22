@@ -66,7 +66,7 @@ class DrawableTriangle(
         paint.color = Color.argb(color.alpha, (color.red * k.toFloat()).toInt(), (color.green * k.toFloat()).toInt(), (color.blue * k.toFloat()).toInt())
         canvas.apply {
             val path = Path()
-            path.fillType = Path.FillType.EVEN_ODD
+            //path.fillType = Path.FillType.EVEN_ODD
             path.moveTo(
                 cx + (width * point1.x).toFloat(),
                 cy - (width * point1.y).toFloat())

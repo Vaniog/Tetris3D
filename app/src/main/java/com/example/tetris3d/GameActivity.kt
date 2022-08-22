@@ -4,10 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.Switch
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.example.customopengl.GLSurfaceView
 import com.example.tetris3d.CustomOpenGL.JoystickSpace
 import com.example.tetris3d.CustomOpenGL.ScoreBoard
@@ -20,11 +19,14 @@ class GameActivity : AppCompatActivity() {
         var field = Field(4, 15, 9)
 
 
+
         val doStep = findViewById<Button>(R.id.doStep)
         val rotateButton = findViewById<Button>(R.id.rotateButton)
         val layout = findViewById<FrameLayout>(R.id.frameLayout)
         val menuButton = findViewById<Button>(R.id.button2)
-
+        val pauseButton = findViewById<ImageButton>(R.id.pauseButton)
+        val pauseText = findViewById<TextView>(R.id.pauseText)
+        pauseText.isVisible = false
 
         var need : Int? = getIntent().extras?.getInt("need")
         if (need == null)
@@ -38,6 +40,7 @@ class GameActivity : AppCompatActivity() {
         view.addSpace(JoystickSpace(fieldSpace))
         view.addSpace(scoreBoard)
         layout.addView(view)
+        pauseText.bringToFront()
 
         doStep.setOnClickListener{
             var action = field.doStep(true)
@@ -57,6 +60,10 @@ class GameActivity : AppCompatActivity() {
 
         menuButton.setOnClickListener{
             finish()
+        }
+        pauseButton.setOnClickListener{
+            fieldSpace.isPaused = !fieldSpace.isPaused
+            pauseText.isVisible = fieldSpace.isPaused
         }
     }
     var currentTime = 0L

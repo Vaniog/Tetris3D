@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         val casualButton = findViewById<Button>(R.id.casualButton)
         val campaignButton = findViewById<Button>(R.id.campaignButton)
         val tutorialButton = findViewById<Button>(R.id.tutorialButton)
+        val settingsButton = findViewById<Button>(R.id.settingsButton)
 
         val sharedPreferences = getSharedPreferences("data", Context.MODE_PRIVATE)
         val highScore = sharedPreferences.getInt("HIGH_SCORE", 0)
@@ -39,6 +40,10 @@ class MainActivity : AppCompatActivity() {
         }
         tutorialButton.setOnClickListener{
             val i = Intent(this, TutorialActivity::class.java)
+            startActivity(i)
+        }
+        settingsButton.setOnClickListener{
+            val i = Intent(this, SettingsActivity::class.java)
             startActivity(i)
         }
     }

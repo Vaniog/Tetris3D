@@ -1,13 +1,14 @@
 package com.example.customopengl
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.app.Activity
+import android.content.res.Resources
+import android.graphics.*
+import android.graphics.drawable.ShapeDrawable
 import androidx.core.graphics.alpha
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import com.example.tetris3d.R
 import kotlin.math.*
 
 class DrawableSquare(
@@ -71,7 +72,7 @@ class DrawableSquare(
         paint.color = Color.argb(color.alpha, (color.red * k.toFloat()).toInt(), (color.green * k.toFloat()).toInt(), (color.blue * k.toFloat()).toInt())
         canvas.apply {
             val path = Path()
-            path.fillType = Path.FillType.EVEN_ODD
+            //path.fillType = Path.FillType.WINDING
             path.moveTo(
                 cx + (width * point1.x).toFloat(),
                 cy - (width * point1.y).toFloat())

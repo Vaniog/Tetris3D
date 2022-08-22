@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 var someViewCreated = false
 open class GLSurfaceView (context: Context) : SurfaceView(context), SurfaceHolder.Callback {
     var firstView = false
+
     private val spaces = MutableList(0){Space()}
     private var surfaceThread = SurfaceDrawingThread(holder, spaces)
 

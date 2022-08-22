@@ -3,6 +3,7 @@
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.graphics.Paint
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -11,6 +12,7 @@ import androidx.annotation.RequiresApi
 import com.example.customopengl.Space
 import com.example.tetris3d.CustomOpenGL.ScoreBoard
 import kotlin.math.*
+
 
 
 class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBoard) : Space() {
@@ -31,6 +33,7 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
     var fieldRotationYNeedToAdd = 0.0
     var fieldRotationYChangeLaunch = false
     var fieldRotationYID = 0
+
 
     fun fieldRotationYUpdateLaunch(){
         fieldRotationYNeedToAdd = PI / 2.0
@@ -56,9 +59,23 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
 
     var fieldRotationX = 0.02
     private var lastUpdateTime = time
+    var isPaused = false
+
+
+    var COLOR_CUBE_LINES = Color.rgb(190, 190, 190)
+    private fun doColors(){
+        val sharedPreferences = context.getSharedPreferences("data", Context.MODE_PRIVATE)
+        if (sharedPreferences.getBoolean("DARK_MODE_ENABLED", false))
+            COLOR_CUBE_LINES = Color.rgb(30, 30, 30)
+    }
 
     override fun onFrame() {
         stopped = true
+        if (isPaused){
+            stopped = false
+            return
+        }
+
         if (!field.gameEnded) {
             if (time - lastUpdateTime > 1.0 / scoreBoard.speed) {
                 val action = field.doStep(false)
@@ -78,7 +95,7 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
             }
         }
 
-
+        doColors()
         translate(0.0, 0.0, -8.0)
         rotateZ(PI)
         rotateX(-PI/4.0)
@@ -115,7 +132,7 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
         field.width * 2 - 1, -field.height * 2 + 1, -1,
         )
 
-        lineColor3d(190, 190, 190)
+        lineColor3d(COLOR_CUBE_LINES)
         for (x in field.field.indices)
             for (y in field.field[0].indices)
                 for (z in field.field[0][0].indices){
@@ -286,6 +303,8 @@ class FieldSpace(val field: Field, val context: Context, val scoreBoard: ScoreBo
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onTouchEvent(event: MotionEvent?, width : Int, height : Int) : Boolean {
+        if (field.gameEnded)
+            return true
         if (event == null)
             return true
         if (event.action == MotionEvent.ACTION_MOVE) {

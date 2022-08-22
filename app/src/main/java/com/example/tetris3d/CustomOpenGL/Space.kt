@@ -120,6 +120,7 @@ open class Space {
         objects.add(square)
     }
 
+
     fun square(p1x : Int, p1y : Int, p1z : Int,
                p2x : Int, p2y : Int, p2z : Int,
                p3x : Int, p3y : Int, p3z : Int,
